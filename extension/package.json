@@ -1,0 +1,12 @@
+{
+  "name": "noizy-ads-extension",
+  "version": "0.0.1",
+  "description": "noizy-ads-extension",
+  "private": true,
+  "license": "MIT",
+  "devDependencies": {
+    "gulp": "^3.8.11",
+    "socket.io": "^1.3.4"
+  },
+  "dependencies": {}
+}
