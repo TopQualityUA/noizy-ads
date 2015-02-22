@@ -18,14 +18,14 @@ chrome.extension.onRequest.addListener(function(request, sender) {
         break;
       case 'validateNode':
         console.log('Validating Node');
-        $.ajax({
-          type: 'GET',
-          url: 'http://localhost:9000/match',
-          data: data
-        })
-        .done(function( msg ) {
-          console.log( 'Data Send: ' + msg );
-        });
+        //$.ajax({
+        //  type: 'GET',
+        //  url: 'http://localhost:9000/match',
+        //  data: data
+        //})
+        //.done(function( msg ) {
+        //  console.log( 'Data Send: ' + msg );
+        //});
         break;
       default:
         console.log('Unknown command "' + cmd);
@@ -34,5 +34,3 @@ chrome.extension.onRequest.addListener(function(request, sender) {
     console.log('Error: empty request');
   }
 });
-
-

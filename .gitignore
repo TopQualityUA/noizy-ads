@@ -2,3 +2,5 @@ server/node_modules
 extension/node_modules
 extension/bower_components
 .idea
+extension/.idea
+server/.idea

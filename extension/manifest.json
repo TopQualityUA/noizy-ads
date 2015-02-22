@@ -13,14 +13,15 @@
   },
   "browser_action": {
     "default_title": "Noizy ads blocker",
-    "default_popup": "popup.html"
+    "default_popup": "views/popup.html"
   },
   "background": {
     "scripts": [
+      "scripts/app_config.js",
       "node_modules/socket.io/node_modules/socket.io-client/socket.io.js",
       "bower_components/jquery/dist/jquery.js",
-      "scripts/chromereload.js",
-      "scripts/background.js"
+      "scripts/background/chromereload.js",
+      "scripts/background/background.js"
     ]
   },
   "content_scripts": [
@@ -29,7 +30,7 @@
         "http://*/*",
         "https://*/*"
       ],
-      "js": ["bower_components/jquery/dist/jquery.js", "scripts/content_pre_load.js"],
+      "js": ["scripts/app_config.js", "bower_components/jquery/dist/jquery.js", "scripts/content/content_pre_load.js"],
       "run_at": "document_start"
     },
     {
@@ -38,9 +39,10 @@
         "https://*/*"
       ],
       "all_frames": false,
-      "js": ["scripts/content_after_load.js"],
+      "js": ["scripts/content/content_after_load.js"],
       "run_at": "document_end"
     }
   ],
-  "content_security_policy": "script-src 'self' https://ajax.googleapis.com; object-src 'self'"
+  "content_security_policy": "script-src 'self' https://ajax.googleapis.com; object-src 'self'",
+  "offline_enabled": false
 }
