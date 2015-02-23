@@ -21,7 +21,7 @@
       "node_modules/socket.io/node_modules/socket.io-client/socket.io.js",
       "bower_components/jquery/dist/jquery.js",
       "scripts/background/chromereload.js",
-      "scripts/background/validate_url.js",
+      "scripts/background/url_parser.js",
       "scripts/background/background.js"
     ]
   },

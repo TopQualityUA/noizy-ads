@@ -18,14 +18,7 @@ chrome.extension.onRequest.addListener(function(request, sender) {
         break;
       case 'validateNode':
         console.log('Validating Node');
-        //$.ajax({
-        //  type: 'GET',
-        //  url: 'http://localhost:9000/match',
-        //  data: data
-        //})
-        //.done(function( msg ) {
-        //  console.log( 'Data Send: ' + msg );
-        //});
+          //parse here url and match
         break;
       default:
         console.log('Unknown command "' + cmd);
