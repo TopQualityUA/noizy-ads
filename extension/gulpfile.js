@@ -4,7 +4,9 @@ var io = require('socket.io')();
 var jshint = require('gulp-jshint');
 var cache = require('gulp-cached');
 var path = {
-    scripts: ['./**/*.js', '!./node_modules/**/*', '!./bower_components/**/*']
+    scripts: ['./scripts/**/*.js', '!./node_modules/**/*', '!./bower_components/**/*'],
+    html: ['./views/**/*.html'],
+    css: ['./styles/**/*.css']
   };
 
 gulp.task('lint', function(){
@@ -28,7 +30,7 @@ gulp.task('watch', function () {
   io.listen(35729);
 
   gulp.watch(path.scripts, ['lint']); //js files watcher for linting
-  gulp.watch(['./**/*.*'], ['reloadSocketConnection']);
+  gulp.watch(path.scripts.concat(path.html.concat(path.css.concat(['./manifest.json', './bower.json', './package.json']))), ['reloadSocketConnection']);
 });
 
 gulp.task('default', ['watch']);

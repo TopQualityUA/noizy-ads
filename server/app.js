@@ -6,6 +6,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var cors = require('cors');
+var scheduler = require('./schedulers/tld_refresher.js');
 
 var routes = require('./routes/index');
 

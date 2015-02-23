@@ -19,7 +19,6 @@ gulp.task('default', function () {
     //.on('change', ['lint']) //run tasks after any file changes such as build, etc.
     .on('restart', function (changes) {
       changedFiles = changes || [];
-      console.log('restarted!');
     },
       ['lint']); //run tasks after restarting server such as lint for changed files, etc.
 });
