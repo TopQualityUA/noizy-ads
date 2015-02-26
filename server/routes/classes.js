@@ -5,10 +5,12 @@ var path = require('path');
 
 
 router.get('/', function (req, res, next) {
-  var filepath = path.join(__dirname, '../public/tld_lists/regex_tld.txt');
-  var readable = fs.createReadStream(filepath);
-
-  readable.pipe(res);
+  res.send({
+    'sports.ru': {
+      id: '1',
+      name : 'sports.ru'
+    }
+  });
 });
 
 module.exports = router;

@@ -4,7 +4,9 @@ var router = express.Router();
 //require other routes
 var users = require('./users');
 var match = require('./match');
-var tld = require('./tld');
+var tlds = require('./tlds');
+var hosts = require('./hosts');
+var classes = require('./classes');
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -14,6 +16,8 @@ router.get('/', function (req, res, next) {
 /*add others routes*/
 router.use('/users', users);
 router.use('/match', match);
-router.use('/tld', tld);
+router.use('/tlds', tlds);
+router.use('/hosts', hosts);
+router.use('/classes', classes);
 
 module.exports = router;
