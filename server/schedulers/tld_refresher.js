@@ -25,6 +25,8 @@ var j = schedule.scheduleJob({hour: 13}, function () {
         .filter(function (e) {
           return e;
         })
+        .sort()//TODO: do better sorting for faster regexp
+        .reverse()
         .join('|')
         .trim());
     });

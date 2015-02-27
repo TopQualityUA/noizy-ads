@@ -23,6 +23,7 @@
       "scripts/background/chromereload.js",
       "scripts/background/store.js",
       "scripts/background/url_parser.js",
+      "scripts/background/worker.js",
       "scripts/background/background.js"
     ]
   },
