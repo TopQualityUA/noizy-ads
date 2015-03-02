@@ -12,3 +12,5 @@ app.config = {
 app.toAppUrl = function(method) {
     return method ? app.config.ENV.protocol + app.config.ENV.host + '/' + method : '';
 };
+
+export default app;

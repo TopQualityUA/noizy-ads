@@ -3,11 +3,16 @@
 //some abstraction over google chrome storage
 //more info: https://developer.chrome.com/extensions/storage
 //TODO: add event machine for store
-var Store = function () {
-    var _urlRegexp, _hostsRegexp, _classesRegexp, _hosts, _tlds, _classes;
+import jquery from "jquery";
+import app from "../app_config.js";
+var $ = jquery;
+var _urlRegexp, _hostsRegexp, _classesRegexp, _hosts, _tlds, _classes,
+    _fetchHosts, _fetchClasses, _fetchTlds,
+    _buildHostsRegexp, _buildClassesRegexp, _buildUrlRegexp;
 
-    //TODO: rewrite using promises
-    var _fetchHosts = function () {
+//private methods
+_fetchHosts = function () {
+    return new Promise(function (resolve, reject) {
         $.ajax({
             type: 'GET',
             url: app.toAppUrl('hosts')
@@ -19,7 +24,7 @@ var Store = function () {
                         // Notify that we saved.
                         console.log('Hosts saved');
                     });
-                    _buildHostsRegexp();
+                    resolve(_buildHostsRegexp());
                 } else {
                     console.log('Error: hosts are empty');
                 }
@@ -27,53 +32,55 @@ var Store = function () {
             .fail(function (error) {
                 console.log('Hosts error:', error);
             });
-    };
+    })
+};
 
-    var _fetchClasses = function () {
-        $.ajax({
-            type: 'GET',
-            url: app.toAppUrl('classes')
+_fetchClasses = function () {
+    $.ajax({
+        type: 'GET',
+        url: app.toAppUrl('classes')
+    })
+        .done(function (res) {
+            if (!$.isEmptyObject(res)) {
+                _classes = res;
+                chrome.storage.local.set({'classes': res}, function () {
+                    // Notify that we saved.
+                    console.log('Classes saved');
+                });
+                _buildHostsRegexp();
+            } else {
+                console.log('Error: classes are empty');
+            }
         })
-            .done(function (res) {
-                if (!$.isEmptyObject(res)) {
-                    _classes = res;
-                    chrome.storage.local.set({'classes': res}, function () {
-                        // Notify that we saved.
-                        console.log('Classes saved');
-                    });
-                    _buildHostsRegexp();
-                } else {
-                    console.log('Error: classes are empty');
-                }
-            })
-            .fail(function (error) {
-                console.log('Classes error:', error);
-            });
-    };
+        .fail(function (error) {
+            console.log('Classes error:', error);
+        });
+};
 
-    var _fetchTlds = function () {
-        $.ajax({
-            type: 'GET',
-            url: app.toAppUrl('tlds/regexp')
+_fetchTlds = function () {
+    $.ajax({
+        type: 'GET',
+        url: app.toAppUrl('tlds/regexp')
+    })
+        .done(function (res) {
+            _tlds = res.toString();
+            if (_tlds) {
+                chrome.storage.local.set({'tlds': _tlds}, function () {
+                    // Notify that we saved.
+                    console.log('Tlds saved');
+                });
+                _buildUrlRegexp();
+            } else {
+                console.log('Error: tlds are empty');
+            }
         })
-            .done(function (res) {
-                _tlds = res.toString();
-                if (_tlds) {
-                    chrome.storage.local.set({'tlds': _tlds}, function () {
-                        // Notify that we saved.
-                        console.log('Tlds saved');
-                    });
-                    _buildUrlRegexp();
-                } else {
-                    console.log('Error: tlds are empty');
-                }
-            })
-            .fail(function (error) {
-                console.log('Tld error:', error);
-            });
-    };
+        .fail(function (error) {
+            console.log('Tld error:', error);
+        });
+};
 
-    var _buildHostsRegexp = function () {
+_buildHostsRegexp = function () {
+    return new Promise(function (resolve, reject) {
         chrome.storage.local.get('hosts', function (item) {
             if ($.isEmptyObject(item.hosts)) {
                 _fetchHosts();
@@ -84,118 +91,58 @@ var Store = function () {
                     })
                     .join('|');
                 _hostsRegexp = new RegExp(_hostsRegexpBody);
+                resolve(_hostsRegexp);
                 chrome.storage.local.set({'hostRegexp': _hostsRegexpBody}, function () {
                     // Notify that we saved.
                     console.log('Hosts regexp saved');
                 });
             }
         });
-    };
+    });
 
-    var _buildClassesRegexp = function () {
-        chrome.storage.local.get('classes', function (item) {
-            if ($.isEmptyObject(item.classes)) {
-                _fetchClasses();
-            } else {
-                var _classesRegexpBody = Array.prototype.slice.call(item.classes)
-                    .map(function (el) {
-                        return '.*' + el.name.replace('.', '\\.') + '.*';
-                    })
-                    .join('|');
-                _classesRegexp = new RegExp(_classesRegexpBody);
-                chrome.storage.local.set({'classesRegexp': _classesRegexpBody}, function () {
-                    // Notify that we saved.
-                    console.log('Classes regexp saved');
-                });
-            }
-        });
+};
 
-    };
-
-    var _buildUrlRegexp = function () {
-        chrome.storage.local.get('tlds', function (item) {
-            var _urlRegexpPreffix = '((https?:\\/\\/www\\.)|(https?:\\/\\/)|(www\\.))([0-9a-z\\._-]+)((\\.(',
-                _urlRegexpSuffix = '))(\\/([0-9a-z_\\-]+))*' +
-                    '(\\/([\\/\\w\\.\\-\\#\\?\\!\\(\\)\\=\\*\\%\\&]*))?)';
-            if ($.isEmptyObject(item.tlds)) {
-                _fetchTlds();
-            } else {
-                var _urlRegexpBody = _urlRegexpPreffix + item.tlds.toString() + _urlRegexpSuffix;
-                _urlRegexp = new RegExp(_urlRegexpBody);
-                chrome.storage.local.set({'urlRegexp': _urlRegexpBody}, function () {
-                    // Notify that we saved.
-                    console.log('Url regexp saved');
-                });
-            }
-        });
-    };
-
-    this.getHosts = function () {
-        if ($.isEmptyObject(_hosts)) {
-            _fetchHosts();
-        }
-        return _hosts;
-    };
-
-    this.getClasses = function () {
-        if ($.isEmptyObject(_hosts)) {
+_buildClassesRegexp = function () {
+    chrome.storage.local.get('classes', function (item) {
+        if ($.isEmptyObject(item.classes)) {
             _fetchClasses();
+        } else {
+            var _classesRegexpBody = Array.prototype.slice.call(item.classes)
+                .map(function (el) {
+                    return '.*' + el.name.replace('.', '\\.') + '.*';
+                })
+                .join('|');
+            _classesRegexp = new RegExp(_classesRegexpBody);
+            chrome.storage.local.set({'classesRegexp': _classesRegexpBody}, function () {
+                // Notify that we saved.
+                console.log('Classes regexp saved');
+            });
         }
-        return _classes;
-    };
+    });
 
-    this.getHost = function (hostKey) {
-        var result = '';
-        chrome.storage.local.get('hosts.' + hostKey, function (item) {
-            if ($.isEmptyObject(item)) {
-                if ($.isEmptyObject(_classes)) {
-                    _fetchClasses();
-                } else {
-                    result = null;
-                }
-            } else {
-                result = item.name;
-            }
-        });
-    };
+};
 
-    this.getClass = function (classKey) {
-        var result = '';
-        chrome.storage.local.get('classes.' + classKey, function (item) {
-            if ($.isEmptyObject(item)) {
-                if ($.isEmptyObject(_classes)) {
-                    _fetchClasses();
-                } else {
-                    result = null;
-                }
-            } else {
-                result = item.name;
-            }
-        });
-    };
-
-    this.getHostsRegexp = function (classKey) {
-        if (!_hostsRegexp) {
-            _buildHostsRegexp();
+_buildUrlRegexp = function () {
+    chrome.storage.local.get('tlds', function (item) {
+        var _urlRegexpPreffix = '((https?:\\/\\/www\\.)|(https?:\\/\\/)|(www\\.))([0-9a-z\\._-]+)((\\.(',
+            _urlRegexpSuffix = '))(\\/([0-9a-z_\\-]+))*' +
+                '(\\/([\\/\\w\\.\\-\\#\\?\\!\\(\\)\\=\\*\\%\\&]*))?)';
+        if ($.isEmptyObject(item.tlds)) {
+            _fetchTlds();
+        } else {
+            var _urlRegexpBody = _urlRegexpPreffix + item.tlds.toString() + _urlRegexpSuffix;
+            _urlRegexp = new RegExp(_urlRegexpBody);
+            chrome.storage.local.set({'urlRegexp': _urlRegexpBody}, function () {
+                // Notify that we saved.
+                console.log('Url regexp saved');
+            });
         }
-        return _hostsRegexp;
-    };
+    });
+};
 
-    this.getClassesRegexp = function (classKey) {
-        if (!_classesRegexp) {
-            _buildClassesRegexp();
-        }
-        return _classesRegexp;
-    };
-
-    this.getUrlRegexp = function () {
-        if (!_urlRegexp) {
-            _buildUrlRegexp();
-        }
-        return _urlRegexp;
-    };
-
-    var _init = function () {
+//Store class with public methods
+class Store {
+    constructor() {
         chrome.storage.local.get(
             ['hosts', 'classes', 'tlds', 'urlRegexp', 'hostsRegexp', 'classesRegexp'],
             function (items) {
@@ -235,13 +182,77 @@ var Store = function () {
                         'Old value was "%s", new value is "%s".',
                         key,
                         namespace/*,
-                        storageChange.oldValue,
-                        storageChange.newValue*/);
+                         storageChange.oldValue,
+                         storageChange.newValue*/);
                 }
+            }
+        });
+    }
+
+    getHosts() {
+        //if ($.isEmptyObject(_hosts)) {
+        //    _fetchHosts();
+        //}
+        return $.isEmptyObject(_hosts) ? _fetchHosts() : _hosts;
+    };
+
+    getClasses() {
+        if ($.isEmptyObject(_hosts)) {
+            _fetchClasses();
+        }
+        return _classes;
+    };
+
+    getHost(hostKey) {
+        var result = '';
+        chrome.storage.local.get('hosts.' + hostKey, function (item) {
+            if ($.isEmptyObject(item)) {
+                if ($.isEmptyObject(_classes)) {
+                    _fetchClasses();
+                } else {
+                    result = null;
+                }
+            } else {
+                result = item.name;
             }
         });
     };
 
-    _init();
-    return this;
-};
+    getClass(classKey) {
+        var result = '';
+        chrome.storage.local.get('classes.' + classKey, function (item) {
+            if ($.isEmptyObject(item)) {
+                if ($.isEmptyObject(_classes)) {
+                    _fetchClasses();
+                } else {
+                    result = null;
+                }
+            } else {
+                result = item.name;
+            }
+        });
+    };
+
+    getHostsRegexp(classKey) {
+        if (!_hostsRegexp) {
+            _buildHostsRegexp();
+        }
+        return _hostsRegexp;
+    };
+
+    getClassesRegexp(classKey) {
+        if (!_classesRegexp) {
+            _buildClassesRegexp();
+        }
+        return _classesRegexp;
+    };
+
+    getUrlRegexp() {
+        if (!_urlRegexp) {
+            _buildUrlRegexp();
+        }
+        return _urlRegexp;
+    };
+}
+
+export default Store;

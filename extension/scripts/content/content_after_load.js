@@ -1,5 +1,8 @@
 'use strict';
 
+import jquery from 'jquery'
+var $ = jquery;
+
 var frequency = Math.floor(Math.random() * 300000) + 300000;//check nodes once per 5-10 mins
 
 var port = chrome.runtime.connect();

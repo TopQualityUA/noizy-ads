@@ -1,8 +1,9 @@
 'use strict';
 
-(function (){
+import jquery from "jquery";
+import Store from './store';
     var urlRegexp,
-        worker = new Worker('scripts/background/worker.js'),
+        worker = new Worker(chrome.runtime.getURL('scripts/worker.js')),
         store = new Store(),
         date;
     //
@@ -12,7 +13,6 @@
     //        store: store
     //    }
     //});
-
     //use promises
     urlRegexp = store.getUrlRegexp();
     worker.postMessage({
@@ -106,4 +106,3 @@
             }
         });
     });
-})();

@@ -7,6 +7,17 @@ var gulp = require('gulp'),
   },
   changedFiles = path.scripts; //default value
 
+var load_hosts = require('./tasks/load_hosts');
+var load_tlds = require('./tasks/load_tlds');
+
+gulp.task('load_hosts', function (){
+  load_hosts();
+});
+
+gulp.task('load_tlds', function (){
+  load_tlds();
+});
+
 gulp.task('lint', function () {
   gulp.src(changedFiles)
     .pipe(jshint('.jshintrc'))

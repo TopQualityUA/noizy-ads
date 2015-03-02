@@ -12,6 +12,7 @@ function validateLocation(){
     });
 }
 
+
 validateLocation(); //validate hostname on load
 
 //do other stuff
