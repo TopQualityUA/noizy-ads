@@ -15,15 +15,15 @@ class Store {
         chrome.storage.local.get(
             ['hosts', 'classes', 'tldsRegexp', 'urlRegexp', 'hostsRegexp', 'classesRegexp'],
             function (items) {
-                console.log(items)
                 // Notify that we saved.
                 if ($.isEmptyObject(items.hosts)) {
                     _that._fetchHosts();
                 } else {
                     _that._hosts = items.hosts;
-                    if ($.isEmptyObject(items.hostsRegexp)) {
-                        _that._buildHostsRegexp();
-                    }
+                }
+
+                if ($.isEmptyObject(items.hostsRegexp)) {
+                    _that._fetchHostsRegexp();
                 }
                 //if (!items.classes) {
                 //    _that._fetchClasses();
@@ -33,16 +33,12 @@ class Store {
                 //        _that._buildClassesRegexp();
                 //    }
                 //}
-                if ($.isEmptyObject(items.tldsRegexp)) {
+                if ($.isEmptyObject(items.urlRegexp)) {
                     _that._fetchTldsRegexp();
                 } else {
-                    _that._tldsRegexp = items.tldsRegexp;
-                    if ($.isEmptyObject(items.urlRegexp)) {
-                        _that._buildUrlRegexp();
-                    } else {
-                        _that._urlRegexp = new RegExp(items.urlRegexp);
-                    }
+                    _that._urlRegexp = new RegExp(items.urlRegexp);
                 }
+
             });
         chrome.storage.onChanged.addListener(function (changes, namespace) {
             for (var key in changes) {
@@ -91,6 +87,32 @@ class Store {
         });
     }
 
+    _fetchHostsRegexp() {
+        var _that = this;
+        return new Promise(function (resolve, reject) {
+            $.ajax({
+                type: 'GET',
+                url: app.toAppUrl('hosts/regexp')
+            })
+                .done(function (res) {
+                    if (!$.isEmptyObject(res)) {
+                        _that._hostsRegexp = new RegExp(res);
+
+                        chrome.storage.local.set({'hostsRegexp': _that._hostsRegexp}, function () {
+                            // Notify that we saved.
+                            console.log('Hosts Regexp saved');
+                        });
+                        resolve(_that._hostsRegexp);
+                    } else {
+                        console.log('Error: hosts are empty');
+                    }
+                })
+                .fail(function (error) {
+                    console.log('Hosts error:', error);
+                });
+        });
+    }
+
     _fetchClasses() {
         var _that = this;
         $.ajax({
@@ -108,7 +130,6 @@ class Store {
                         // Notify that we saved.
                         console.log('Classes saved');
                     });
-                    //_that._buildClassesRegexp();
                 } else {
                     console.log('Error: classes are empty');
                 }
@@ -118,165 +139,169 @@ class Store {
             });
     }
 
-    _fetchTldsRegexp() {
-        var _that = this;
-        $.ajax({
-            type: 'GET',
-            url: app.toAppUrl('tlds/regexp')
-        })
-            .done(function (res) {
-                _that._tldsRegexp = res.toString();
-                if (_that._tldsRegexp) {
-                    chrome.storage.local.set({'tldsRegexp': _that._tldsRegexp}, function () {
-                        // Notify that we saved.
-                        console.log('Tlds saved');
-                    });
-                    _that._buildUrlRegexp();
-                } else {
-                    console.log('Error: tlds are empty');
-                }
-            })
-            .fail(function (error) {
-                console.log('Tld error:', error);
-            });
-    }
-
-    _buildHostsRegexp() {
+    _fetchClassesRegexp() {
         var _that = this;
         return new Promise(function (resolve, reject) {
-            chrome.storage.local.get('hosts', function (item) {
-                if ($.isEmptyObject(item.hosts)) {
-                    resolve(_that._fetchHosts()
-                    .then(function (hosts){
-                            if (hosts) {
-                                return _that._buildHostsRegexp();
-                            }
-                        }));
-                } else {
-                    var _hostsRegexpBody = Array.prototype.slice.call(item.hosts)
-                        .map(function (el) {
-                            return '.*' + el.name.replace('.', '\\.') + '.*';
-                        })
-                        .join('|');
-                    _that._hostsRegexp = new RegExp(_hostsRegexpBody);
-                    resolve(_that._hostsRegexp);
-                    chrome.storage.local.set({'hostsRegexp': _hostsRegexpBody}, function () {
-                        // Notify that we saved.
-                        console.log('Hosts regexp saved');
-                    });
-                }
-            });
-        });
+            $.ajax({
+                type: 'GET',
+                url: app.toAppUrl('classes/regexp')
+            })
+                .done(function (res) {
+                    console.log(res);
+                    if (!$.isEmptyObject(res)) {
+                        _that._classesRegexp = new RegExp(res);
 
-    }
-
-    _buildClassesRegexp() {
-        var _that = this;
-        chrome.storage.local.get('classes', function (item) {
-            if ($.isEmptyObject(item.classes)) {
-                _that._fetchClasses();
-            } else {
-                var _classesRegexpBody = Array.prototype.slice.call(item.classes)
-                    .map(function (el) {
-                        return '.*' + el.name.replace('.', '\\.') + '.*';
-                    })
-                    .join('|');
-                _that._classesRegexp = new RegExp(_classesRegexpBody);
-                chrome.storage.local.set({'classesRegexp': _classesRegexpBody}, function () {
-                    // Notify that we saved.
-                    console.log('Classes regexp saved');
+                        chrome.storage.local.set({'classesRegexp': _that._classesRegexp}, function () {
+                            // Notify that we saved.
+                            console.log('Hosts Regexp saved');
+                        });
+                        resolve(_that._hostsRegexp);
+                    } else {
+                        console.log('Error: hosts are empty');
+                    }
+                })
+                .fail(function (error) {
+                    console.log('Hosts error:', error);
                 });
-            }
         });
-
     }
 
-    _buildUrlRegexp() {
+    _fetchTldsRegexp() {
         var _that = this;
-        chrome.storage.local.get('tldsRegexp', function (item) {
-            var _urlRegexpPreffix = '((https?:\\/\\/www\\.)|(https?:\\/\\/)|(www\\.))' +
+        return new Promise(function (resolve, reject) {
+            $.ajax({
+                type: 'GET',
+                url: app.toAppUrl('tlds/regexp')
+            })
+                .done(function (res) {
+                    _that._tldsRegexp = res.toString();
+                    if (_that._tldsRegexp) {
+                        chrome.storage.local.set({'tldsRegexp': _that._tldsRegexp}, function () {
+                            // Notify that we saved.
+                            console.log('Tlds saved');
+                        });
+                        resolve(_that._buildUrlRegexp(_that._tldsRegexp));
+                    } else {
+                        let error = 'Error: tlds are empty';
+                        console.log(error);
+                        reject(error);
+                    }
+                })
+                .fail(function (error) {
+                    console.log('Tld error:', error);
+                });
+        });
+    }
+
+    _buildUrlRegexp(tldsRegexp) {
+        if ($.isEmptyObject(tldsRegexp)) {
+            return 'Bad tlds regexp';
+        } else {
+            let _urlRegexpPreffix = '((https?:\\/\\/www\\.)|(https?:\\/\\/)|(www\\.))' +
                     '([0-9a-z\\._-]+)((\\.(',
                 _urlRegexpSuffix = '))(\\/([0-9a-z_\\-]+))*' +
-                '(\\/([\\/\\w\\.\\-\\#\\?\\!\\(\\)\\=\\*\\%\\&]*))?)';
-            if ($.isEmptyObject(item.tldsRegexp)) {
-                _that._fetchRegexpTlds();
-            } else {
-                var _urlRegexpBody = _urlRegexpPreffix + item.tldsRegexp.toString() + _urlRegexpSuffix;
-                _that._urlRegexp = new RegExp(_urlRegexpBody);
-                chrome.storage.local.set({'urlRegexp': _urlRegexpBody}, function () {
-                    // Notify that we saved.
-                    console.log('Url regexp saved');
-                });
-            }
-        });
+                    '(\\/([\\/\\w\\.\\-\\#\\?\\!\\(\\)\\=\\*\\%\\&]*))?)',
+                _urlRegexpBody = _urlRegexpPreffix + tldsRegexp.toString() + _urlRegexpSuffix;
+            this._urlRegexp = new RegExp(_urlRegexpBody);
+            chrome.storage.local.set({'urlRegexp': _urlRegexpBody}, function () {
+                // Notify that we saved.
+                console.log('Url regexp saved');
+            });
+            return this._urlRegexp;
+        }
     }
 
     //public methods
     get hosts() {
-        //if ($.isEmptyObject(this._hosts)) {
-        //    _fetchHosts();
-        //}
-        return $.isEmptyObject(this._hosts) ? this._fetchHosts() : this._hosts;
+        var _that = this;
+        return new Promise(function (resolve, reject) {
+            $.isEmptyObject(this._hosts) ?
+                _that._fetchHosts()
+                    .then(function (hosts) {
+                        resolve(hosts);
+                    })
+                : resolve(this._hosts);
+        })
     }
 
     get classes() {
-        if ($.isEmptyObject(this._hosts)) {
-            _that._fetchClasses();
-        }
-        return this._classes;
+        var _that = this;
+        return new Promise(function (resolve, reject) {
+            $.isEmptyObject(this._hosts) ?
+                _that._fetchClasses()
+                    .then(function (classes) {
+                        resolve(classes);
+                    })
+                : resolve(this._classes);
+        })
     }
 
-    getHost(hostKey) {
-        var result = '',
-            _that = this;
-        chrome.storage.local.get('hosts.' + hostKey, function (item) {
-            if ($.isEmptyObject(item)) {
-                if ($.isEmptyObject(this._classes)) {
-                    _that._fetchClasses();
-                } else {
-                    result = null;
-                }
-            } else {
-                result = item.name;
-            }
-        });
-    }
-
-    getClass(classKey) {
-        var result = '',
-            _that = this;
-        chrome.storage.local.get('classes.' + classKey, function (item) {
-            if ($.isEmptyObject(item)) {
-                if ($.isEmptyObject(_that._classes)) {
-                    _that._fetchClasses();
-                } else {
-                    result = null;
-                }
-            } else {
-                result = item.name;
-            }
-        });
-    }
+    //getHost(hostKey) { TODO: fix this functional
+    //    var result = '',
+    //        _that = this;
+    //    chrome.storage.local.get('hosts.' + hostKey, function (item) {
+    //        if ($.isEmptyObject(item)) {
+    //            if ($.isEmptyObject(this._classes)) {
+    //                _that._fetchClasses();
+    //            } else {
+    //                result = null;
+    //            }
+    //        } else {
+    //            result = item.name;
+    //        }
+    //    });
+    //}
+    //
+    //getClass(classKey) {
+    //    var result = '',
+    //        _that = this;
+    //    chrome.storage.local.get('classes.' + classKey, function (item) {
+    //        if ($.isEmptyObject(item)) {
+    //            if ($.isEmptyObject(_that._classes)) {
+    //                _that._fetchClasses();
+    //            } else {
+    //                result = null;
+    //            }
+    //        } else {
+    //            result = item.name;
+    //        }
+    //    });
+    //}
 
     get hostsRegexp() {
-        if (!this._hostsRegexp) {
-            this._buildHostsRegexp();
-        }
-        return this._hostsRegexp;
+        var _that = this;
+        return new Promise(function (resolve, reject) {
+            $.isEmptyObject(_that._hostsRegexp) ?
+                _that._fetchHostsRegexp()
+                    .then(function (hostsRegexp) {
+                        resolve(hostsRegexp);
+                    })
+                : resolve(_that._hostsRegexp);
+        })
     }
 
     get classesRegexp() {
-        if (!this._classesRegexp) {
-            this._buildClassesRegexp();
-        }
-        return this._classesRegexp;
+        var _that = this;
+        return new Promise(function (resolve, reject) {
+            $.isEmptyObject(_that._classesRegexp) ?
+                _that._fetchClassesRegexp()
+                    .then(function (classesRegexp) {
+                        resolve(classesRegexp);
+                    })
+                : resolve(_that._classesRegexp);
+        });
     }
 
     get urlRegexp() {
-        if (!this._urlRegexp) {
-            this._buildUrlRegexp();
-        }
-        return this._urlRegexp;
+        var _that = this;
+        return new Promise(function (resolve, reject) {
+            $.isEmptyObject(_that._urlRegexp) ?
+                _that._fetchTldsRegexp()
+                    .then(function (urlRegexp) {
+                        resolve(urlRegexp);
+                    })
+                : resolve(_that._urlRegexp);
+        });
     }
 }
 

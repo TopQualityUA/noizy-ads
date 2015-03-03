@@ -58,11 +58,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
-	var UrlParser = _interopRequire(__webpack_require__(3));
+	var UrlParser = _interopRequire(__webpack_require__(2));
 
-	var HostValidation = _interopRequire(__webpack_require__(4));
+	var HostValidation = _interopRequire(__webpack_require__(3));
 
-	var ClassValidation = _interopRequire(__webpack_require__(5));
+	var ClassValidation = _interopRequire(__webpack_require__(4));
 
 	(function () {
 	    var _urlParser,
@@ -102,8 +102,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 1 */,
-/* 2 */,
-/* 3 */
+/* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -162,7 +161,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = UrlParser;
 
 /***/ },
-/* 4 */
+/* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -198,7 +197,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = HostValidation;
 
 /***/ },
-/* 5 */
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -236,6 +235,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = ClassValidation;
 
 /***/ },
+/* 5 */,
 /* 6 */,
 /* 7 */,
 /* 8 */
