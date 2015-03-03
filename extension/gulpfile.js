@@ -77,7 +77,7 @@ gulp.task('build', ['clean'], function (){
 
 gulp.task('watch', function () {
     io.on('connection', function (socket){});//socket.io server for livereload
-    io.listen(35729);
+    io.listen(35720);
 
     gulp.watch(paths.scripts, function(){
         runSequence(['lint', 'clean:scripts'], 'webpack',

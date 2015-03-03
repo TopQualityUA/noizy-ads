@@ -4,11 +4,11 @@
 // The reload client has a compatibility with livereload.
 // Only for development environment
 
-import io from 'io'
-import app from '../app_config.js'
+import io from 'io';
+import app from '../app_config.js';
 
 if (app.config.ENV.environment === 'development'){
-  var socket = io('http://localhost:35729');//connecting to socket.io server for livereload
+  var socket = io('http://localhost:35720');//connecting to socket.io server for livereload
   socket.on('reload', function (data) {
     console.log('Need reloading:', data, data.reload === true);
     chrome.runtime.reload();

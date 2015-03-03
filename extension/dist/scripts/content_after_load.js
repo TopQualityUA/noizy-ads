@@ -50,16 +50,15 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	return __webpack_require__(0);
 /******/ })
 /************************************************************************/
-/******/ ({
-
-/***/ 0:
+/******/ ([
+/* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
 	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
-	var jquery = _interopRequire(__webpack_require__(6));
+	var jquery = _interopRequire(__webpack_require__(1));
 
 	var $ = jquery;
 
@@ -95,8 +94,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 /***/ },
-
-/***/ 6:
+/* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -9307,6 +9305,5 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }
-
-/******/ })
+/******/ ])
 });

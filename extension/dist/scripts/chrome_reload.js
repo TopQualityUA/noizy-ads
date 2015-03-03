@@ -64,10 +64,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var io = _interopRequire(__webpack_require__(7));
 
-	var app = _interopRequire(__webpack_require__(5));
+	var app = _interopRequire(__webpack_require__(6));
 
 	if (app.config.ENV.environment === "development") {
-	  var socket = io("http://localhost:35729"); //connecting to socket.io server for livereload
+	  var socket = io("http://localhost:35720"); //connecting to socket.io server for livereload
 	  socket.on("reload", function (data) {
 	    console.log("Need reloading:", data, data.reload === true);
 	    chrome.runtime.reload();
@@ -79,7 +79,8 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 2 */,
 /* 3 */,
 /* 4 */,
-/* 5 */
+/* 5 */,
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -100,7 +101,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = app;
 
 /***/ },
-/* 6 */,
 /* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -1183,8 +1183,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * Module dependencies.
 	 */
 
-	var debug = __webpack_require__(29)('socket.io-parser');
-	var json = __webpack_require__(28);
+	var debug = __webpack_require__(28)('socket.io-parser');
+	var json = __webpack_require__(29);
 	var isArray = __webpack_require__(26);
 	var Emitter = __webpack_require__(27);
 	var binary = __webpack_require__(24);
@@ -2621,6 +2621,149 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
+	
+	/**
+	 * Expose `debug()` as the module.
+	 */
+
+	module.exports = debug;
+
+	/**
+	 * Create a debugger with the given `name`.
+	 *
+	 * @param {String} name
+	 * @return {Type}
+	 * @api public
+	 */
+
+	function debug(name) {
+	  if (!debug.enabled(name)) return function(){};
+
+	  return function(fmt){
+	    fmt = coerce(fmt);
+
+	    var curr = new Date;
+	    var ms = curr - (debug[name] || curr);
+	    debug[name] = curr;
+
+	    fmt = name
+	      + ' '
+	      + fmt
+	      + ' +' + debug.humanize(ms);
+
+	    // This hackery is required for IE8
+	    // where `console.log` doesn't have 'apply'
+	    window.console
+	      && console.log
+	      && Function.prototype.apply.call(console.log, console, arguments);
+	  }
+	}
+
+	/**
+	 * The currently active debug mode names.
+	 */
+
+	debug.names = [];
+	debug.skips = [];
+
+	/**
+	 * Enables a debug mode by name. This can include modes
+	 * separated by a colon and wildcards.
+	 *
+	 * @param {String} name
+	 * @api public
+	 */
+
+	debug.enable = function(name) {
+	  try {
+	    localStorage.debug = name;
+	  } catch(e){}
+
+	  var split = (name || '').split(/[\s,]+/)
+	    , len = split.length;
+
+	  for (var i = 0; i < len; i++) {
+	    name = split[i].replace('*', '.*?');
+	    if (name[0] === '-') {
+	      debug.skips.push(new RegExp('^' + name.substr(1) + '$'));
+	    }
+	    else {
+	      debug.names.push(new RegExp('^' + name + '$'));
+	    }
+	  }
+	};
+
+	/**
+	 * Disable debug output.
+	 *
+	 * @api public
+	 */
+
+	debug.disable = function(){
+	  debug.enable('');
+	};
+
+	/**
+	 * Humanize the given `ms`.
+	 *
+	 * @param {Number} m
+	 * @return {String}
+	 * @api private
+	 */
+
+	debug.humanize = function(ms) {
+	  var sec = 1000
+	    , min = 60 * 1000
+	    , hour = 60 * min;
+
+	  if (ms >= hour) return (ms / hour).toFixed(1) + 'h';
+	  if (ms >= min) return (ms / min).toFixed(1) + 'm';
+	  if (ms >= sec) return (ms / sec | 0) + 's';
+	  return ms + 'ms';
+	};
+
+	/**
+	 * Returns true if the given mode name is enabled, false otherwise.
+	 *
+	 * @param {String} name
+	 * @return {Boolean}
+	 * @api public
+	 */
+
+	debug.enabled = function(name) {
+	  for (var i = 0, len = debug.skips.length; i < len; i++) {
+	    if (debug.skips[i].test(name)) {
+	      return false;
+	    }
+	  }
+	  for (var i = 0, len = debug.names.length; i < len; i++) {
+	    if (debug.names[i].test(name)) {
+	      return true;
+	    }
+	  }
+	  return false;
+	};
+
+	/**
+	 * Coerce `val`.
+	 */
+
+	function coerce(val) {
+	  if (val instanceof Error) return val.stack || val.message;
+	  return val;
+	}
+
+	// persist
+
+	try {
+	  if (window.localStorage) debug.enable(localStorage.debug);
+	} catch(e){}
+
+
+/***/ },
+/* 29 */
+/***/ function(module, exports, __webpack_require__) {
+
 	var __WEBPACK_AMD_DEFINE_RESULT__;/*! JSON v3.2.6 | http://bestiejs.github.io/json3 | Copyright 2012-2013, Kit Cambridge | http://kit.mit-license.org */
 	;(function (window) {
 	  // Convenience aliases.
@@ -3482,149 +3625,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	  }
 	}(this));
-
-
-/***/ },
-/* 29 */
-/***/ function(module, exports, __webpack_require__) {
-
-	
-	/**
-	 * Expose `debug()` as the module.
-	 */
-
-	module.exports = debug;
-
-	/**
-	 * Create a debugger with the given `name`.
-	 *
-	 * @param {String} name
-	 * @return {Type}
-	 * @api public
-	 */
-
-	function debug(name) {
-	  if (!debug.enabled(name)) return function(){};
-
-	  return function(fmt){
-	    fmt = coerce(fmt);
-
-	    var curr = new Date;
-	    var ms = curr - (debug[name] || curr);
-	    debug[name] = curr;
-
-	    fmt = name
-	      + ' '
-	      + fmt
-	      + ' +' + debug.humanize(ms);
-
-	    // This hackery is required for IE8
-	    // where `console.log` doesn't have 'apply'
-	    window.console
-	      && console.log
-	      && Function.prototype.apply.call(console.log, console, arguments);
-	  }
-	}
-
-	/**
-	 * The currently active debug mode names.
-	 */
-
-	debug.names = [];
-	debug.skips = [];
-
-	/**
-	 * Enables a debug mode by name. This can include modes
-	 * separated by a colon and wildcards.
-	 *
-	 * @param {String} name
-	 * @api public
-	 */
-
-	debug.enable = function(name) {
-	  try {
-	    localStorage.debug = name;
-	  } catch(e){}
-
-	  var split = (name || '').split(/[\s,]+/)
-	    , len = split.length;
-
-	  for (var i = 0; i < len; i++) {
-	    name = split[i].replace('*', '.*?');
-	    if (name[0] === '-') {
-	      debug.skips.push(new RegExp('^' + name.substr(1) + '$'));
-	    }
-	    else {
-	      debug.names.push(new RegExp('^' + name + '$'));
-	    }
-	  }
-	};
-
-	/**
-	 * Disable debug output.
-	 *
-	 * @api public
-	 */
-
-	debug.disable = function(){
-	  debug.enable('');
-	};
-
-	/**
-	 * Humanize the given `ms`.
-	 *
-	 * @param {Number} m
-	 * @return {String}
-	 * @api private
-	 */
-
-	debug.humanize = function(ms) {
-	  var sec = 1000
-	    , min = 60 * 1000
-	    , hour = 60 * min;
-
-	  if (ms >= hour) return (ms / hour).toFixed(1) + 'h';
-	  if (ms >= min) return (ms / min).toFixed(1) + 'm';
-	  if (ms >= sec) return (ms / sec | 0) + 's';
-	  return ms + 'ms';
-	};
-
-	/**
-	 * Returns true if the given mode name is enabled, false otherwise.
-	 *
-	 * @param {String} name
-	 * @return {Boolean}
-	 * @api public
-	 */
-
-	debug.enabled = function(name) {
-	  for (var i = 0, len = debug.skips.length; i < len; i++) {
-	    if (debug.skips[i].test(name)) {
-	      return false;
-	    }
-	  }
-	  for (var i = 0, len = debug.names.length; i < len; i++) {
-	    if (debug.names[i].test(name)) {
-	      return true;
-	    }
-	  }
-	  return false;
-	};
-
-	/**
-	 * Coerce `val`.
-	 */
-
-	function coerce(val) {
-	  if (val instanceof Error) return val.stack || val.message;
-	  return val;
-	}
-
-	// persist
-
-	try {
-	  if (window.localStorage) debug.enable(localStorage.debug);
-	} catch(e){}
 
 
 /***/ },
@@ -4546,8 +4546,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 
 	var keys = __webpack_require__(41);
-	var hasBinary = __webpack_require__(47);
-	var sliceBuffer = __webpack_require__(46);
+	var hasBinary = __webpack_require__(46);
+	var sliceBuffer = __webpack_require__(47);
 	var base64encoder = __webpack_require__(51);
 	var after = __webpack_require__(48);
 	var utf8 = __webpack_require__(52);
@@ -6423,41 +6423,6 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/**
-	 * An abstraction for slicing an arraybuffer even when
-	 * ArrayBuffer.prototype.slice is not supported
-	 *
-	 * @api public
-	 */
-
-	module.exports = function(arraybuffer, start, end) {
-	  var bytes = arraybuffer.byteLength;
-	  start = start || 0;
-	  end = end || bytes;
-
-	  if (arraybuffer.slice) { return arraybuffer.slice(start, end); }
-
-	  if (start < 0) { start += bytes; }
-	  if (end < 0) { end += bytes; }
-	  if (end > bytes) { end = bytes; }
-
-	  if (start >= bytes || start >= end || bytes === 0) {
-	    return new ArrayBuffer(0);
-	  }
-
-	  var abv = new Uint8Array(arraybuffer);
-	  var result = new Uint8Array(end - start);
-	  for (var i = start, ii = 0; i < end; i++, ii++) {
-	    result[ii] = abv[i];
-	  }
-	  return result.buffer;
-	};
-
-
-/***/ },
-/* 47 */
-/***/ function(module, exports, __webpack_require__) {
-
 	/* WEBPACK VAR INJECTION */(function(global) {
 	/*
 	 * Module requirements.
@@ -6518,6 +6483,41 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 	
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
+
+/***/ },
+/* 47 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * An abstraction for slicing an arraybuffer even when
+	 * ArrayBuffer.prototype.slice is not supported
+	 *
+	 * @api public
+	 */
+
+	module.exports = function(arraybuffer, start, end) {
+	  var bytes = arraybuffer.byteLength;
+	  start = start || 0;
+	  end = end || bytes;
+
+	  if (arraybuffer.slice) { return arraybuffer.slice(start, end); }
+
+	  if (start < 0) { start += bytes; }
+	  if (end < 0) { end += bytes; }
+	  if (end > bytes) { end = bytes; }
+
+	  if (start >= bytes || start >= end || bytes === 0) {
+	    return new ArrayBuffer(0);
+	  }
+
+	  var abv = new Uint8Array(arraybuffer);
+	  var result = new Uint8Array(end - start);
+	  for (var i = start, ii = 0; i < end; i++, ii++) {
+	    result[ii] = abv[i];
+	  }
+	  return result.buffer;
+	};
+
 
 /***/ },
 /* 48 */

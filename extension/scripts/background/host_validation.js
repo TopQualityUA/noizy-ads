@@ -1,12 +1,11 @@
-import brain from 'brain'
+import brain from 'brain';
 
-var _hosts;
 class HostValidation {
     constructor(hosts){
-        _hosts = hosts;
+        this._hosts = hosts;
     }
     test(value) {
-        return value === 'sports.ru';
+        return value === 'sports.ru'; // TODO: add logic
     }
 }
 

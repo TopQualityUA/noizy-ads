@@ -58,49 +58,52 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
-	var UrlParser = _interopRequire(__webpack_require__(1));
+	var UrlParser = _interopRequire(__webpack_require__(3));
 
-	var HostValidation = _interopRequire(__webpack_require__(2));
+	var HostValidation = _interopRequire(__webpack_require__(4));
 
-	var ClassValidation = _interopRequire(__webpack_require__(3));
+	var ClassValidation = _interopRequire(__webpack_require__(5));
 
-	var _urlParser,
-	    _hostValidation = new HostValidation(),
-	    _classValidation = new ClassValidation();
+	(function () {
+	    var _urlParser,
+	        _hostValidation = new HostValidation(),
+	        _classValidation = new ClassValidation();
 
-	addEventListener("message", function (e) {
-	    var data = e.data.data,
-	        //TODO: maybe rename?
-	    cmd = e.data.cmd,
-	        sender = e.data.sender;
-	    switch (cmd) {
-	        case "urlRegexp":
-	            //console.log('5');
-	            _urlParser = new UrlParser(data.urlRegexp);
-	            break;
-	        case "validateLocation":
-	            var location = _urlParser.getHost(data.location);
-	            if (_hostValidation.test(location)) {
-	                postMessage({
-	                    cmd: "block",
-	                    sender: sender,
-	                    location: location
-	                });
-	            }
-	            break;
-	        case "validateNode":
-	            break;
-	        case "close":
-	            console.log("close");
-	            close();
-	            break;
-	        default:
-	            postMessage("Unknown command: " + data.msg);
-	    }
-	}, false);
+	    addEventListener("message", function (e) {
+	        var data = e.data.data,
+	            //TODO: maybe rename?
+	        cmd = e.data.cmd,
+	            sender = e.data.sender;
+	        switch (cmd) {
+	            case "urlRegexp":
+	                _urlParser = new UrlParser(data.urlRegexp);
+	                break;
+	            case "validateLocation":
+	                var location = _urlParser.getHost(data.location);
+	                if (_hostValidation.test(location)) {
+	                    postMessage({
+	                        cmd: "block",
+	                        sender: sender,
+	                        location: location
+	                    });
+	                }
+	                break;
+	            case "validateNode":
+	                break;
+	            case "close":
+	                console.log("close");
+	                close();
+	                break;
+	            default:
+	                postMessage("Unknown command: " + data.msg);
+	        }
+	    }, false);
+	})();
 
 /***/ },
-/* 1 */
+/* 1 */,
+/* 2 */,
+/* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -110,19 +113,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 
 	//Regular expression for url matching and validating, for more info visit http://jex.im/regulex/#!embed=false&flags=&re=((https%3F%3A%5C%2F%5C%2Fwww%5C.)%7C(https%3F%3A%5C%2F%5C%2F)%7C(www%5C.))(%5B0-9a-z%5C._-%5D%2B)((%5C.(com%7Ccom%5C.ua))(%5C%2F(%5B0-9a-z%5C._%5C-%5D%2B))*(%5C%2F(%5B%5C%2F%5Cw%5C.%5C-%5C%23%5C%3F%5C!%5C(%5C)%5C%3D%5C*%5C%25%5C%26%5D*))%3F)
-	var _urlRegexp;
 
 	var UrlParser = (function () {
 	    function UrlParser(urlRegexp) {
 	        _classCallCheck(this, UrlParser);
 
-	        _urlRegexp = urlRegexp;
+	        this._urlRegexp = urlRegexp;
 	    }
 
 	    _prototypeProperties(UrlParser, null, {
 	        getHost: {
 	            value: function getHost(url) {
-	                var match = url.match(_urlRegexp);
+	                var match = url.match(this._urlRegexp);
 	                return match[5].concat(match[7]);
 	            },
 	            writable: true,
@@ -130,7 +132,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        },
 	        getLinkWithoutQueryParams: {
 	            value: function getLinkWithoutQueryParams(url) {
-	                var match = url.match(_urlRegexp);
+	                var match = url.match(this._urlRegexp);
 	                return match[5].concat(match[7].concat(match[9]));
 	            },
 	            writable: true,
@@ -138,9 +140,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	        },
 	        getQueryParams: {
 	            value: function getQueryParams(url) {
-	                return url.match(_urlRegexp)[12];
+	                return url.match(this._urlRegexp)[12];
 	            },
 	            writable: true,
+	            configurable: true
+	        },
+	        regexp: {
+	            set: function (urlRegexp) {
+	                this._urlRegexp = urlRegexp;
+	            },
+	            get: function () {
+	                return this._urlRegexp;
+	            },
 	            configurable: true
 	        }
 	    });
@@ -151,7 +162,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = UrlParser;
 
 /***/ },
-/* 2 */
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -164,19 +175,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var brain = _interopRequire(__webpack_require__(8));
 
-	var _hosts;
-
 	var HostValidation = (function () {
 	    function HostValidation(hosts) {
 	        _classCallCheck(this, HostValidation);
 
-	        _hosts = hosts;
+	        this._hosts = hosts;
 	    }
 
 	    _prototypeProperties(HostValidation, null, {
 	        test: {
 	            value: function test(value) {
-	                return value === "sports.ru";
+	                return value === "sports.ru"; // TODO: add logic
 	            },
 	            writable: true,
 	            configurable: true
@@ -189,7 +198,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = HostValidation;
 
 /***/ },
-/* 3 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -227,8 +236,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = ClassValidation;
 
 /***/ },
-/* 4 */,
-/* 5 */,
 /* 6 */,
 /* 7 */,
 /* 8 */

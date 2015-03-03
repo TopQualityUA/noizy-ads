@@ -1,6 +1,6 @@
 'use strict';
 
-import jquery from "jquery";
+import jquery from 'jquery';
 import Store from './store';
     var urlRegexp,
         worker = new Worker(chrome.runtime.getURL('scripts/worker.js')),
@@ -14,13 +14,15 @@ import Store from './store';
     //    }
     //});
     //use promises
-    urlRegexp = store.getUrlRegexp();
-    worker.postMessage({
-        cmd: 'urlRegexp',
-        data: {
-            urlRegexp: urlRegexp || /.+/
-        }
-    });
+    //urlRegexp = store.urlRegexp;
+    //worker.postMessage({
+    //    cmd: 'urlRegexp',
+    //    data: {
+    //        urlRegexp: urlRegexp || /.+/
+    //    }
+    //});
+
+console.log(store.urlRegexp)
 
     worker.addEventListener('message', function(e) {
         var data = e.data.data,//TODO: maybe rename?
@@ -40,8 +42,7 @@ import Store from './store';
 
     chrome.runtime.onConnect.addListener(function(port) {
         if (!urlRegexp){
-            //console.log('1');
-            urlRegexp = store.getUrlRegexp();
+            urlRegexp = store.urlRegexp;
             worker.postMessage({
                 cmd: 'urlRegexp',
                 data: {
@@ -49,7 +50,6 @@ import Store from './store';
                 }
             });
         } else {
-            //console.log('2');
             worker.postMessage({
                 cmd: 'urlRegexp',
                 data: {
@@ -59,8 +59,7 @@ import Store from './store';
         }
         port.onMessage.addListener(function(request, sender) {
             if (!urlRegexp){
-                //console.log('3');
-                urlRegexp = store.getUrlRegexp();
+                urlRegexp = store.urlRegexp;
                 worker.postMessage({
                     cmd: 'urlRegexp',
                     data: {
