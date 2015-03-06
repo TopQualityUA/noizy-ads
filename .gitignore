@@ -4,3 +4,7 @@ extension/bower_components
 .idea
 extension/.idea
 server/.idea
+extension/dist
+extension/.temp
+server/dist
+server/.temp
