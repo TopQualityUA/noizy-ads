@@ -1,12 +1,14 @@
 import brain from 'brain';
+import log from '../log.js';
 
 class HostValidation {
-    constructor(hosts){
-        this._hosts = hosts;
-    }
-    test(value) {
-        return value === 'sports.ru'; // TODO: add logic
-    }
+  constructor(hostsRegexp) {
+    this._hostsRegexp = hostsRegexp;
+  }
+
+  test(value) {
+    return this._hostsRegexp.test(value);
+  }
 }
 
 export default HostValidation;

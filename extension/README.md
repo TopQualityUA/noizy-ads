@@ -1,4 +1,4 @@
-# Noizy ads extension app
+# Noizy-Ads extension app
 
 This README outlines the details of collaborating on this extension application.
 A short introduction of this app could easily go here.

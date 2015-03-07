@@ -1,3 +1,4 @@
 'use strict';
+import log from '../log.js';
 
-console.log('\'Allo \'Allo! Popup');
+log('\'Allo \'Allo! Popup');

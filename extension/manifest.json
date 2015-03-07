@@ -24,19 +24,10 @@
         "http://*/*",
         "https://*/*"
       ],
-      "js": ["scripts/content_pre_load.js"],
-      "run_at": "document_start"
-    },
-    {
-      "matches": [
-        "http://*/*",
-        "https://*/*"
-      ],
-      "all_frames": false,
-      "js": ["scripts/content_after_load.js"],
-      "run_at": "document_end"
+      "all_frames": true,
+      "js": ["scripts/content.js"]
     }
   ],
   "content_security_policy": "script-src 'self' https://ajax.googleapis.com; object-src 'self'",
-  "offline_enabled": false
+  "offline_enabled": true
 }
