@@ -5,18 +5,18 @@ import ClassValidation from './class_validation.js';
 import log from '../log.js';
 
 (function () {
-  var _urlParser, _hostValidation/*,
+  var _hostValidation,
+    _urlParser = new UrlParser()/*,
     _classValidation = new ClassValidation()*/;
 
   addEventListener('message', function (e) {
     var data = e.data.data,//TODO: maybe rename?
       cmd = e.data.cmd,
+      nodeId = e.data.nodeId,
+      windowName = e.data.windowName,
       sender = e.data.sender,
       tabId = e.data.tabId;
     switch (cmd) {
-      case 'urlRegexp':
-        _urlParser = new UrlParser(data.urlRegexp);
-        break;
       case 'hostsRegexp':
         _hostValidation = new HostValidation(data.hostsRegexp);
         break;
@@ -67,6 +67,8 @@ import log from '../log.js';
               cmd: 'removeNode',
               sender: sender || '',
               tabId: tabId || '',
+              nodeId: nodeId || '',
+              windowName: windowName || '',
               data: testResult.data || ''
             });
           }
@@ -81,6 +83,8 @@ import log from '../log.js';
           cmd: 'Unknown command:',
           sender: sender || '',
           tabId: tabId || '',
+          nodeId: nodeId || '',
+          windowName: windowName || '',
           data: data.msg || ''
         });
     }

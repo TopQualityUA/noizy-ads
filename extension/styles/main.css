@@ -1,105 +1,62 @@
 body {
-  color: black;
-  background: white;
-  margin: 0px;
+  color: #000;
+  background: #ecf0f1;
+  margin: 0;
 }
 
-#wrapper {
-  margin: 0px 0px;
-  font-family: "Arial", sans-serif;
-  font-size: 12px;
-  padding-left: 5px;
-  padding-bottom: 5px;
+.error {
+    margin: 10% 20%;
+    padding: 3%;
+    border: 2px solid;
+    border-radius: 7px;
+}
+.error__header {
+    text-align: center;
 }
 
-.separator {
-  width: 100%;
-  border-top: 2px groove white;
-  margin-top: 5px;
-  margin-bottom: 5px;
-  margin-left: -5px;
-  margin-right: -8px;
+.error__body {
+    font-size: 17px;
+    line-height: 1.471
 }
 
-.menu-entry {
-  padding: 3px 2px;
-  cursor:pointer;
+.title {
+    margin: auto;
 }
 
-.menu-entry:hover {
-  border: 1px solid #AECFF7;
-  border-radius: 3px;
-  padding: 2px 1px;
-  padding-left:37px;
-  margin-left:-36px;
-}
-#container {
-  width: 300px;
-  max-height: 350px;
-  overflow-y: scroll;
-}
-#blocked{
-  background: #ccc;
-  padding: 5px;
-  border: solid 1px black;
-
-}
-.info {
-  background: #dddddd;
-  border: 1px solid gray;
-  border-radius: 5px;
-  margin: 5px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-#titletext {
-  padding: 8px 8px 8px 0px;
-  text-align: right;
-}
-#titletext span {
-  font-weight: bold;
-  cursor: default;
-}
-#titletext span:hover {
-  text-decoration: underline;
+.button {
+    transition: border .25s linear,color .25s linear,background-color .25s linear;
+    font-weight: 400;
+    border: none;
+    padding: 10px 19px;
+    font-size: 17px;
+    line-height: 1.471;
+    border-radius: 6px;
+    width: 20%;
+    outline: none;
 }
 
-.box {
-  margin: 5px 5px 5px 0px;
-  background: #E7E8E9;
-  border: 1px solid black;
-  padding: 10px;
-  border-radius: 5px;
+.button--danger {
+     color: #fff;
+     background-color: #e74c3c;
+ }
+
+.button--info {
+    color: #fff;
+    background-color: #3498db;
 }
 
-#link_open {
-  padding-bottom: 3px;
+.button a {
+    text-decoration: none;
+    color: inherit;
 }
 
-#link_close {
-  margin: -7px 0px 0px 0px;
-  font-family: "Courier", sans-serif;
+.button-group {
+    text-align: center;
+}
+.button-group .button {
+    margin-left: 10%;
 }
 
-
-#block_counts {
-  display: none;
-  margin-bottom: 1em;
-}
-.header {
-  font-weight: bold;
-}
-.block_count_number {
-  font-weight: bold;
-  color: red;
-}
-#block_counts_controls {
-  margin-top: 1em;
-}
-#today_date{
-  padding: 8px 8px 8px 0px;
-  text-align: right;
-  font-weight: bold;
-  cursor: default;
-
+.button-group .button:first-child {
+    margin-left: 0;
 }

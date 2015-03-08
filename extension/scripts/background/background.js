@@ -7,19 +7,9 @@ import log from '../log.js';
 var $ = jquery;
 
 var ports = [],
+  counters = {},
   worker = new Worker(chrome.runtime.getURL('scripts/worker.js')),
   store = new Store();
-
-// load regexps
-store.urlRegexp
-  .then(function (res) {
-    worker.postMessage({
-      cmd: 'urlRegexp',
-      data: {
-        urlRegexp: res
-      }
-    });
-  });
 
 store.hostsRegexp
   .then(function (res) {
@@ -30,12 +20,6 @@ store.hostsRegexp
       }
     });
   });
-
-function checkURL(tabId, changeInfo, tab){
-  if (tab.url.indexOf('www.opera.com')> -1){ // If it satisfies the criteria (the URL containing 'www.opera.com')
-     // shows the page action
-  }
-}
 
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab){
   worker.postMessage({
@@ -52,15 +36,20 @@ worker.addEventListener('message', function (e) {
   try{
     var data = e.data.data,//TODO: maybe rename?
       cmd = e.data.cmd,
+      nodeId = e.data.nodeId,
+      windowName = e.data.windowName,
       sender = e.data.sender.sender,
       tabId = e.data.tabId;//TODO: find out why
     switch (cmd) {
       case 'removeNode':
         ports.forEach(function (port){
-          if (port.sender.tab.id == sender.tab.id && port.name == 'after') {
+          if ((port.sender.tab.id == sender.tab.id) &&
+            (port.name === windowName)){
            port.postMessage({
              cmd: 'removeNode',
-             data: data
+             data: data,
+             nodeId: nodeId,
+             windowName: windowName
            });
           }
         });
@@ -80,9 +69,10 @@ worker.addEventListener('message', function (e) {
             log('blocking ad: unknown type ' + data.type);
             break;
         }
-        chrome.browserAction.getBadgeText({ tabId: tabId || sender.tab.id }, function (count){
-          count = count ? parseInt(count) + 1 : 1;
-          chrome.browserAction.setBadgeText({ text: count.toString(), tabId: tabId || sender.tab.id });
+        counters[tabId || sender.tab.id] = counters[tabId || sender.tab.id] + 1;
+        chrome.browserAction.setBadgeText({
+          text: counters[tabId || sender.tab.id].toString(),
+          tabId: tabId || sender.tab.id
         });
         break;
       case 'blockTab':
@@ -108,9 +98,12 @@ chrome.runtime.onInstalled.addListener(function (details) {
 //listen to messages from content scripts
 chrome.runtime.onConnect.addListener(function (port) {
   ports.push(port);
+  counters[port.sender.tab.id] = counters[port.sender.tab.id] || 0; // init counter for page if it doesn't exist
   port.onMessage.addListener(function (request, sender, sendResponse) {
     if (request) {
       var cmd = request.cmd,
+        nodeId = request.nodeId,
+        windowName = request.windowName,
         data = request.data;
       switch (cmd) {
         case 'validateLocation':
@@ -127,6 +120,8 @@ chrome.runtime.onConnect.addListener(function (port) {
             worker.postMessage({
               cmd: cmd,
               data: data,
+              nodeId: nodeId,
+              windowName: windowName,
               sender: sender
             });
           }
@@ -141,5 +136,6 @@ chrome.runtime.onConnect.addListener(function (port) {
 
   port.onDisconnect.addListener(function(){
     ports.splice( $.inArray(port, ports), 1 );
+    delete counters[port.sender.tab.id];
   })
 });

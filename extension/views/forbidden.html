@@ -3,11 +3,34 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>Forbidden</title>
+    <link href="../styles/main.css" rel="stylesheet">
 </head>
 <body>
-<p>Page with url {{blockedUrl}} successfully blocked!</p>
-<p>If you don't want to block this page anymore please go to <a href="unblock.html">Unblock</a></p>
-<p>This will add this web site to your white list.
+<div class="error">
+    <div class="error__header">
+        <h1 class="title">Page with url {{blockedUrl}} was successfully blocked!</h1>
+    </div>
+    <div class="error__body">
+        <!--TODO: Add unblock possibility-->
+        <h3>Note:</h3>
+        <ul>
+            <li>
+                You can always unblock resources.
+            </li>
+            <li>
+                For more info go to info page.
+            </li>
+        </ul>
+        <div class="button-group">
+            <button class="button button--danger" >
+                <a href="unblock.html">Unblock</a>
+            </button>
+            <button class="button button--info" >
+                <a href="options.html">Info</a>
+            </button>
+        </div>
+    </div>
+</div>
 </body>
 <script src="../scripts/forbidden.js"></script>
 </html>
