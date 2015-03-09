@@ -12,7 +12,6 @@ import log from '../log.js';
   addEventListener('message', function (e) {
     var data = e.data.data,//TODO: maybe rename?
       cmd = e.data.cmd,
-      nodeId = e.data.nodeId,
       windowName = e.data.windowName,
       sender = e.data.sender,
       tabId = e.data.tabId;
@@ -34,45 +33,29 @@ import log from '../log.js';
         }
         break;
       case 'validateNode':
-        var _testResult = [];
-        if (data.href) {
-          _testResult.push({
-            result:_hostValidation.test(data.href),
-            data: {
-              type: 'href',
-              href: data.href
-            }
-          });
-        } else if (data.src){
-          _testResult.push({
-            result:_hostValidation.test(data.src),
-            data: {
-              type: 'src',
-              src: data.src
-            }
-          });
-        } else if (data.data){
-
-          _testResult.push({
-            result:_hostValidation.test(data.data),
-            data: {
-              type: 'data',
-              src: data.data
-            }
-          });
-        }
-        _testResult.forEach(function (testResult) {
-          if (testResult.result){
+        let _testResult = false;
+        data.forEach((data)=>{
+          if (data.href) {
+            _testResult = _hostValidation.test(data.href);
+          }
+          if (!_testResult && data.src){
+            _testResult = _hostValidation.test(data.src);
+          }
+          if (!_testResult && data.data){
+            _testResult = _hostValidation.test(data.data);
+          }
+          if (_testResult){
             postMessage({
               cmd: 'removeNode',
               sender: sender || '',
               tabId: tabId || '',
-              nodeId: nodeId || '',
               windowName: windowName || '',
-              data: testResult.data || ''
+              data: data || ''
             });
+            _testResult = false;
           }
         });
+
         break;
       case 'close':
         log('close');
@@ -83,7 +66,6 @@ import log from '../log.js';
           cmd: 'Unknown command:',
           sender: sender || '',
           tabId: tabId || '',
-          nodeId: nodeId || '',
           windowName: windowName || '',
           data: data.msg || ''
         });

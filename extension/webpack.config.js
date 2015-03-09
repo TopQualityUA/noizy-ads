@@ -20,7 +20,6 @@ module.exports = {
     alias: {
       'jquery': __dirname + '/bower_components/jquery/dist/jquery.js',
       'io': __dirname + '/node_modules/socket.io/node_modules/socket.io-client/lib/index.js',
-      'babel_polyfill': __dirname + '/node_modules/babel/polyfill.js',
       'brain': __dirname + '/node_modules/brain/brain-0.5.0.js'
     }
   },
@@ -54,7 +53,7 @@ module.exports = {
       {
         test: /.*\.js$/,
         exclude: /node_modules|bower_components/,
-        loader: 'babel-loader?experimental'
+        loader: 'babel-loader'
       }
     ]
   }/*,

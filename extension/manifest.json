@@ -5,7 +5,8 @@
   "description": "Blocks annoying and noisy ads",
   "permissions": [
     "tabs","<all_urls>","http://*/*", "https://*/*","storage",
-    "cookies","https://ajax.googleapis.com/*","alarms","contextMenus"
+    "cookies","https://ajax.googleapis.com/*","alarms","contextMenus",
+    "idle", "webRequest", "webRequestBlocking", "webNavigation", "notifications"
   ],
   "icons": {
     "16": "images/icon-16.png",
