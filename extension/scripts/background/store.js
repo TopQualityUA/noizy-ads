@@ -102,7 +102,7 @@ class Store extends EventMachine{
     });
   }
 
-  //_fetchClasses() {
+  //_fetchClasses() { // TODO: add classes and id functionality
   //  var _that = this;
   //  $.ajax({
   //    type: 'GET',
@@ -129,7 +129,7 @@ class Store extends EventMachine{
   //    });
   //}
 
-  //_fetchClassesRegexp() {
+  //_fetchClassesRegexp() { // TODO: add classes and id functionality
   //  var _that = this;
   //  return new Promise(function (resolve, reject) {
   //    $.ajax({
@@ -167,16 +167,16 @@ class Store extends EventMachine{
           _that._fetchHosts()
             .then(function (hosts) {
               resolve(hosts);
-            })
+            });
         } else {
           resolve(items.hosts);
         }
-      })
+      });
 
-    })
+    });
   }
 
-  //get classes() {
+  //get classes() { // TODO: add classes and id functionality
   //  var _that = this;
   //  return new Promise(function (resolve, reject) {
   //    chrome.storage.local.get('classes', function (items){
@@ -201,7 +201,7 @@ class Store extends EventMachine{
     });
   }
 
-  //getClass(classKey) {
+  //getClass(classKey) { // TODO: add classes and id functionality
   //    var result = '',
   //        _that = this;
   //    chrome.storage.local.get('classes.' + classKey, function (item) {
@@ -225,15 +225,15 @@ class Store extends EventMachine{
           _that._fetchHostsRegexp()
             .then(function (hostsRegexp) {
               resolve(new RegExp(hostsRegexp));
-            })
+            });
         } else {
           resolve(new RegExp(items.hostsRegexp));
         }
-      })
-    })
+      });
+    });
   }
 
-  //get classesRegexp() {
+  //get classesRegexp() { // TODO: add classes and id functionality
   //  var _that = this;
   //  return new Promise(function (resolve, reject) {
   //    chrome.storage.local.get('classesRegexp', function (items){

@@ -31,7 +31,7 @@ chrome.runtime.onInstalled.addListener(function (details) {
 });
 
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab){
-  //worker.postMessage({
+  //worker.postMessage({ //also location can be validated by worker in separate thread
   //  cmd: 'validateLocation',
   //  data: {
   //    location: tab.url
@@ -51,14 +51,14 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab){
 
 chrome.webRequest.onBeforeRequest.addListener(
   (details)=>{
-    var tabId = details.tabId,
-      reqType = details.type,
-      blocked = false;
+    var blocked,
+        tabId = details.tabId,
+      reqType = details.type;
 
     //validate url synchronously TODO: fix duplicating
     var location = _urlParser.getHost(details.url);
     blocked = _hostValidation.test(location);
-    return { cancel: blocked };
+    return { cancel: blocked };// TODO: add removing element that triggers url request
   },
   {urls: ['http://*/*', 'https://*/*']}, ['blocking']
 );
@@ -70,8 +70,8 @@ worker.addEventListener('message', function (e) {
       cmd = e.data.cmd,
       nodeId = e.data.data.nodeId,
       windowName = e.data.windowName,
-      sender = e.data.sender.sender,
-      tabId = e.data.tabId;//TODO: find out why
+      sender = e.data.sender.sender,//TODO: find out why
+      tabId = e.data.tabId;
     switch (cmd) {
       case 'removeNode':
         ports.forEach(function (port){
