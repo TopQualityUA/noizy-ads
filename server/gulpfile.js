@@ -7,15 +7,20 @@ var gulp = require('gulp'),
   },
   changedFiles = path.scripts; //default value
 
-var load_hosts = require('./tasks/load_hosts');
-var load_tlds = require('./tasks/load_tlds');
+var loadHosts = require('./tasks/load_hosts');
+var loadTlds = require('./tasks/load_tlds');
+var loadWhiteList = require('./tasks/load_whitelist');
 
-gulp.task('load_hosts', function (){
-  load_hosts();
+gulp.task('loadHosts', function (){
+  loadHosts();
 });
 
-gulp.task('load_tlds', function (){
-  load_tlds();
+gulp.task('loadTlds', function (){
+  loadTlds();
+});
+
+gulp.task('loadWhiteList', function (){
+  loadWhiteList();
 });
 
 gulp.task('lint', function () {

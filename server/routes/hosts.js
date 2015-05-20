@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var redis = require("redis"),
+var redis = require('redis'),
   client = redis.createClient();
 
 router.get('/', function (req, res, next) {
@@ -11,7 +11,7 @@ router.get('/', function (req, res, next) {
     });
     multi.exec(function (error, replies){
       res.send(replies);
-    })
+    });
   });
 });
 
