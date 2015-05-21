@@ -1,14 +1,14 @@
 'use strict';
 
-import jquery from 'jquery';
 import log from '../log.js';
-
-var $ = jquery;
 
 var  port,
   frequency = Math.floor(Math.random() * 300000) + 300000,//check nodes once per 5-10 mins
   $nodesToValidate = [],
-  windowName = (Math.random() + 1).toString(36).substr(2,10); //for finding difference between frames
+  windowName = (Math.random() + 1).toString(36).substr(2,10), //for finding difference between frames
+  $ = function ( elem ) { //get shortened form of document.querySelectorAll, like jQuery does
+    return document.querySelectorAll( elem );
+  };
 
 //connect to the background page
 //it seems to be that for all frames there is one port connection
@@ -16,7 +16,7 @@ port = chrome.runtime.connect({name: windowName});
 
 function validateNodes() {
   //expand this to validate all doubtful blocks
-  $nodesToValidate = document.querySelectorAll('[href], [src], [data], [id], [class]');
+  $nodesToValidate = $('[href], [src], [data], [id], [class]');
   if ($nodesToValidate.length) {
     try {
       let data = [];
